@@ -274,6 +274,7 @@ def unet_generator(output_channels, norm_type='batchnorm'):
       upsample(64, 4, norm_type),  # (bs, 128, 128, 128)
       upsample(32, 4, norm_type),  # (bs, 256, 256, 64)
       upsample(16, 4, norm_type),  # (bs, 512, 512, 32)
+      upsample(8, 4, norm_type),  # (bs, 640, 640, 16)
   ]
 
   initializer = tf.random_normal_initializer(0., 0.02)
