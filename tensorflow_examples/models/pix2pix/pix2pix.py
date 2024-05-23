@@ -34,8 +34,8 @@ flags.DEFINE_integer('epochs', 1, 'Number of epochs')
 flags.DEFINE_string('path', None, 'Path to the data folder')
 flags.DEFINE_boolean('enable_function', True, 'Enable Function?')
 
-IMG_WIDTH = 256
-IMG_HEIGHT = 256
+IMG_WIDTH = 640
+IMG_HEIGHT = 640
 AUTOTUNE = tf.data.experimental.AUTOTUNE
 
 
@@ -101,7 +101,7 @@ def random_jitter(input_image, real_image):
     Input Image, real image
   """
   # resizing to 286 x 286 x 3
-  input_image, real_image = resize(input_image, real_image, 286, 286)
+  input_image, real_image = resize(input_image, real_image, 640, 640)
 
   # randomly cropping to 256 x 256 x 3
   input_image, real_image = random_crop(input_image, real_image)
