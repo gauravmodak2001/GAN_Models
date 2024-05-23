@@ -294,13 +294,10 @@ def unet_generator(output_channels, norm_type='batchnorm'):
   x = last(x)
 
   return tf.keras.Model(inputs=inputs, outputs=x)
-Validating Tensor Dimensions
-After defining the U-Net generator, verify the output shapes at each stage by printing the shapes during the model execution.
 
-Here's an example of how to add print statements for debugging:
 
-python
-Copy code
+
+
 def unet_generator_debug(output_channels, norm_type='batchnorm'):
   down_stack = [
       downsample(64, 4, norm_type, apply_norm=False),  # (bs, 320, 320, 64)
