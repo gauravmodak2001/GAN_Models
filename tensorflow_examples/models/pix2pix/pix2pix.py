@@ -249,15 +249,6 @@ def upsample(filters, size, norm_type='batchnorm', apply_dropout=False):
 
 
 def unet_generator(output_channels, norm_type='batchnorm'):
-  """Modified u-net generator model (https://arxiv.org/abs/1611.07004).
-
-  Args:
-    output_channels: Output channels
-    norm_type: Type of normalization. Either 'batchnorm' or 'instancenorm'.
-
-  Returns:
-    Generator model
-  """
     down_stack = [
         downsample(64, 4, norm_type, apply_norm=False),  # (bs, 320, 320, 64)
         downsample(128, 4, norm_type),  # (bs, 160, 160, 128)
@@ -266,24 +257,23 @@ def unet_generator(output_channels, norm_type='batchnorm'):
         downsample(512, 4, norm_type),  # (bs, 20, 20, 512)
         downsample(512, 4, norm_type),  # (bs, 10, 10, 512)
         downsample(512, 4, norm_type),  # (bs, 5, 5, 512)
-        downsample(512, 4, norm_type),  # (bs, 3, 3, 512)
     ]
 
     up_stack = [
-        upsample(512, 4, norm_type, apply_dropout=True),  # (bs, 6, 6, 1024)
-        upsample(512, 4, norm_type, apply_dropout=True),  # (bs, 12, 12, 1024)
-        upsample(512, 4, norm_type, apply_dropout=True),  # (bs, 24, 24, 1024)
-        upsample(512, 4, norm_type),  # (bs, 48, 48, 1024)
-        upsample(256, 4, norm_type),  # (bs, 96, 96, 512)
-        upsample(128, 4, norm_type),  # (bs, 192, 192, 256)
-        upsample(64, 4, norm_type),  # (bs, 384, 384, 128)
+        upsample(512, 4, norm_type, apply_dropout=True),  # (bs, 10, 10, 1024)
+        upsample(512, 4, norm_type, apply_dropout=True),  # (bs, 20, 20, 1024)
+        upsample(512, 4, norm_type, apply_dropout=True),  # (bs, 40, 40, 1024)
+        upsample(512, 4, norm_type),  # (bs, 80, 80, 1024)
+        upsample(256, 4, norm_type),  # (bs, 160, 160, 512)
+        upsample(128, 4, norm_type),  # (bs, 320, 320, 256)
+        upsample(64, 4, norm_type),  # (bs, 640, 640, 128)
     ]
 
     initializer = tf.random_normal_initializer(0., 0.02)
     last = tf.keras.layers.Conv2DTranspose(
         output_channels, 4, strides=2,
         padding='same', kernel_initializer=initializer,
-        activation='tanh')  # (bs, 640, 640, output_channels)
+        activation='tanh')  # (bs, 1280, 1280, output_channels)
 
     concat = tf.keras.layers.Concatenate()
 
@@ -302,6 +292,63 @@ def unet_generator(output_channels, norm_type='batchnorm'):
         x = concat([x, skip])
 
     x = last(x)
+
+    return tf.keras.Model(inputs=inputs, outputs=x)
+Validating Tensor Dimensions
+After defining the U-Net generator, verify the output shapes at each stage by printing the shapes during the model execution.
+
+Here's an example of how to add print statements for debugging:
+
+python
+Copy code
+def unet_generator_debug(output_channels, norm_type='batchnorm'):
+    down_stack = [
+        downsample(64, 4, norm_type, apply_norm=False),  # (bs, 320, 320, 64)
+        downsample(128, 4, norm_type),  # (bs, 160, 160, 128)
+        downsample(256, 4, norm_type),  # (bs, 80, 80, 256)
+        downsample(512, 4, norm_type),  # (bs, 40, 40, 512)
+        downsample(512, 4, norm_type),  # (bs, 20, 20, 512)
+        downsample(512, 4, norm_type),  # (bs, 10, 10, 512)
+        downsample(512, 4, norm_type),  # (bs, 5, 5, 512)
+    ]
+
+    up_stack = [
+        upsample(512, 4, norm_type, apply_dropout=True),  # (bs, 10, 10, 1024)
+        upsample(512, 4, norm_type, apply_dropout=True),  # (bs, 20, 20, 1024)
+        upsample(512, 4, norm_type, apply_dropout=True),  # (bs, 40, 40, 1024)
+        upsample(512, 4, norm_type),  # (bs, 80, 80, 1024)
+        upsample(256, 4, norm_type),  # (bs, 160, 160, 512)
+        upsample(128, 4, norm_type),  # (bs, 320, 320, 256)
+        upsample(64, 4, norm_type),  # (bs, 640, 640, 128)
+    ]
+
+    initializer = tf.random_normal_initializer(0., 0.02)
+    last = tf.keras.layers.Conv2DTranspose(
+        output_channels, 4, strides=2,
+        padding='same', kernel_initializer=initializer,
+        activation='tanh')  # (bs, 1280, 1280, output_channels)
+
+    concat = tf.keras.layers.Concatenate()
+
+    inputs = tf.keras.layers.Input(shape=[640, 640, 3])
+    x = inputs
+
+    skips = []
+    for down in down_stack:
+        x = down(x)
+        print(f'Downsample: {x.shape}')
+        skips.append(x)
+
+    skips = reversed(skips[:-1])
+
+    for up, skip in zip(up_stack, skips):
+        x = up(x)
+        print(f'Upsample before concat: {x.shape}')
+        x = concat([x, skip])
+        print(f'Upsample after concat: {x.shape}')
+
+    x = last(x)
+    print(f'Final output: {x.shape}')
 
     return tf.keras.Model(inputs=inputs, outputs=x)
 
