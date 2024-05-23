@@ -20,8 +20,8 @@ class Pix2PixTest(tf.test.TestCase):
     batch_size = 1
     enable_function = True
 
-    input_image = tf.random.uniform((640, 640, 3))
-    target_image = tf.random.uniform((640, 640, 3))
+    input_image = tf.random.uniform((512, 512, 3))
+    target_image = tf.random.uniform((512, 512, 3))
 
     train_dataset = tf.data.Dataset.from_tensors(
         (input_image, target_image)).map(pix2pix.random_jitter).batch(
@@ -36,8 +36,8 @@ class Pix2PixTest(tf.test.TestCase):
     batch_size = 1
     enable_function = False
 
-    input_image = tf.random.uniform((640, 640, 3))
-    target_image = tf.random.uniform((640, 640, 3))
+    input_image = tf.random.uniform((512, 512, 3))
+    target_image = tf.random.uniform((512, 512, 3))
 
     train_dataset = tf.data.Dataset.from_tensors(
         (input_image, target_image)).map(pix2pix.random_jitter).batch(
