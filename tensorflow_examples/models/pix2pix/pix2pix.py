@@ -258,7 +258,8 @@ def unet_generator(output_channels, norm_type='batchnorm'):
       downsample(512, 4, norm_type),  # (bs, 40, 40, 512)
       downsample(512, 4, norm_type),  # (bs, 20, 20, 512)
       downsample(512, 4, norm_type),  # (bs, 10, 10, 512)
-      downsample(512, 4, norm_type),  # (bs, 5, 5, 512)
+      downsample(512, 4, norm_type),  # (bs, 1, 1, 512)
+      downsample(512, 4, norm_type),  # (bs, 1, 1, 512)
   ]
 
   up_stack = [
@@ -279,7 +280,7 @@ def unet_generator(output_channels, norm_type='batchnorm'):
 
   concat = tf.keras.layers.Concatenate()
 
-  inputs = tf.keras.layers.Input(shape=[640, 640, 3])
+  inputs = tf.keras.layers.Input(shape=[None, None, 3])
   x = inputs
 
   skips = []
