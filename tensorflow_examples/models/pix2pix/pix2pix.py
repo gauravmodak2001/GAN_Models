@@ -258,18 +258,22 @@ def unet_generator(output_channels, norm_type='batchnorm'):
       downsample(512, 4, norm_type),  # (bs, 40, 40, 512)
       downsample(512, 4, norm_type),  # (bs, 20, 20, 512)
       downsample(512, 4, norm_type),  # (bs, 10, 10, 512)
-      downsample(512, 4, norm_type),  # (bs, 1, 1, 512)
+      downsample(512, 4, norm_type),  # (bs, 5, 5, 512)
+      downsample(512, 4, norm_type),  # (bs, 3, 3, 512)
+      downsample(512, 4, norm_type),  # (bs, 2, 2, 512)
       downsample(512, 4, norm_type),  # (bs, 1, 1, 512)
   ]
 
   up_stack = [
-      upsample(512, 4, norm_type, apply_dropout=True),  # (bs, 10, 10, 1024)
-      upsample(512, 4, norm_type, apply_dropout=True),  # (bs, 20, 20, 1024)
-      upsample(512, 4, norm_type, apply_dropout=True),  # (bs, 40, 40, 1024)
-      upsample(512, 4, norm_type),  # (bs, 80, 80, 1024)
-      upsample(256, 4, norm_type),  # (bs, 160, 160, 512)
-      upsample(128, 4, norm_type),  # (bs, 320, 320, 256)
-      upsample(64, 4, norm_type),  # (bs, 640, 640, 128)
+      upsample(512, 4, norm_type, apply_dropout=True),  # (bs, 2, 2, 1024)
+      upsample(512, 4, norm_type, apply_dropout=True),  # (bs, 4, 4, 1024)
+      upsample(512, 4, norm_type, apply_dropout=True),  # (bs, 8, 8, 1024)
+      upsample(512, 4, norm_type),  # (bs, 16, 16, 1024)
+      upsample(256, 4, norm_type),  # (bs, 32, 32, 512)
+      upsample(128, 4, norm_type),  # (bs, 64, 64, 256)
+      upsample(64, 4, norm_type),  # (bs, 128, 128, 128)
+      upsample(32, 4, norm_type),  # (bs, 256, 256, 64)
+      upsample(16, 4, norm_type),  # (bs, 512, 512, 32)
   ]
 
   initializer = tf.random_normal_initializer(0., 0.02)
