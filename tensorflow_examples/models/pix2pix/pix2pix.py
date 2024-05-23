@@ -313,7 +313,7 @@ def discriminator(norm_type='batchnorm', target=True):
 
   initializer = tf.random_normal_initializer(0., 0.02)
 
-  inp = tf.keras.layers.Input(shape=[640, 640, 3], name='input_image')
+  inp = tf.keras.layers.Input(shape=[512, 512, 3], name='input_image')
   x = inp
   
   if target:
