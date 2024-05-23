@@ -481,8 +481,8 @@ def main(epochs, enable_function, path, buffer_size, batch_size):
   pix2pix_object = Pix2pix(epochs, enable_function)
 
   train_dataset, _ = create_dataset(
-      os.path.join(path_to_folder, 'train/*.jpg'),
-      os.path.join(path_to_folder, 'test/*.jpg'),
+      os.path.join(results, 'train/*.jpg'),
+      os.path.join(results, 'test/*.jpg'),
       buffer_size, batch_size)
   checkpoint_pr = get_checkpoint_prefix()
   print ('Training ...')
