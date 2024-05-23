@@ -34,8 +34,8 @@ flags.DEFINE_integer('epochs', 1, 'Number of epochs')
 flags.DEFINE_string('path', None, 'Path to the data folder')
 flags.DEFINE_boolean('enable_function', True, 'Enable Function?')
 
-IMG_WIDTH = 640
-IMG_HEIGHT = 640
+IMG_WIDTH = 512
+IMG_HEIGHT = 512
 AUTOTUNE = tf.data.experimental.AUTOTUNE
 
 
@@ -101,7 +101,7 @@ def random_jitter(input_image, real_image):
     Input Image, real image
   """
   # resizing to 286 x 286 x 3
-  input_image, real_image = resize(input_image, real_image, 640, 640)
+  input_image, real_image = resize(input_image, real_image, 512, 512)
 
   # randomly cropping to 256 x 256 x 3
   input_image, real_image = random_crop(input_image, real_image)
@@ -252,14 +252,12 @@ def upsample(filters, size, norm_type='batchnorm', apply_dropout=False):
 
 def unet_generator(output_channels, norm_type='batchnorm'):
   down_stack = [
-      downsample(64, 4, norm_type, apply_norm=False),  # (bs, 320, 320, 64)
-      downsample(128, 4, norm_type),  # (bs, 160, 160, 128)
-      downsample(256, 4, norm_type),  # (bs, 80, 80, 256)
-      downsample(512, 4, norm_type),  # (bs, 40, 40, 512)
-      downsample(512, 4, norm_type),  # (bs, 20, 20, 512)
-      downsample(512, 4, norm_type),  # (bs, 10, 10, 512)
-      downsample(512, 4, norm_type),  # (bs, 5, 5, 512)
-      downsample(512, 4, norm_type),  # (bs, 3, 3, 512)
+      downsample(64, 4, norm_type, apply_norm=False),  # (bs, 128, 128, 64)
+      downsample(128, 4, norm_type),  # (bs, 64, 64, 128)
+      downsample(256, 4, norm_type),  # (bs, 32, 32, 256)
+      downsample(512, 4, norm_type),  # (bs, 16, 16, 512)
+      downsample(512, 4, norm_type),  # (bs, 8, 8, 512)
+      downsample(512, 4, norm_type),  # (bs, 4, 4, 512)
       downsample(512, 4, norm_type),  # (bs, 2, 2, 512)
       downsample(512, 4, norm_type),  # (bs, 1, 1, 512)
   ]
@@ -272,9 +270,6 @@ def unet_generator(output_channels, norm_type='batchnorm'):
       upsample(256, 4, norm_type),  # (bs, 32, 32, 512)
       upsample(128, 4, norm_type),  # (bs, 64, 64, 256)
       upsample(64, 4, norm_type),  # (bs, 128, 128, 128)
-      upsample(32, 4, norm_type),  # (bs, 256, 256, 64)
-      upsample(16, 4, norm_type),  # (bs, 512, 512, 32)
-      upsample(8, 4, norm_type),  # (bs, 640, 640, 16)
   ]
 
   initializer = tf.random_normal_initializer(0., 0.02)
@@ -285,7 +280,7 @@ def unet_generator(output_channels, norm_type='batchnorm'):
 
   concat = tf.keras.layers.Concatenate()
 
-  inputs = tf.keras.layers.Input(shape=[640, 640, 3])
+  inputs = tf.keras.layers.Input(shape=[512, 512, 3])
   x = inputs
 
   skips = []
@@ -322,7 +317,7 @@ def discriminator(norm_type='batchnorm', target=True):
   x = inp
   
   if target:
-      tar = tf.keras.layers.Input(shape=[640, 640, 3], name='target_image')
+      tar = tf.keras.layers.Input(shape=[512, 512, 3], name='target_image')
       x = tf.keras.layers.concatenate([inp, tar])
 
   down1 = downsample(64, 4, norm_type, False)(x)  # (bs, 128, 128, 64)
