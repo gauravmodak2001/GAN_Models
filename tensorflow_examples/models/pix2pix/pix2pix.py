@@ -280,7 +280,7 @@ def unet_generator(output_channels, norm_type='batchnorm'):
 
   concat = tf.keras.layers.Concatenate()
 
-  inputs = tf.keras.layers.Input(shape=[512, 512, 3])
+  inputs = tf.keras.layers.Input(shape=[None, None, 3])
   x = inputs
 
   skips = []
@@ -313,11 +313,11 @@ def discriminator(norm_type='batchnorm', target=True):
 
   initializer = tf.random_normal_initializer(0., 0.02)
 
-  inp = tf.keras.layers.Input(shape=[512, 512, 3], name='input_image')
+  inp = tf.keras.layers.Input(shape=[None, None, 3], name='input_image')
   x = inp
   
   if target:
-      tar = tf.keras.layers.Input(shape=[512, 512, 3], name='target_image')
+      tar = tf.keras.layers.Input(shape=[None, None, 3], name='target_image')
       x = tf.keras.layers.concatenate([inp, tar])
 
   down1 = downsample(64, 4, norm_type, False)(x)  # (bs, 128, 128, 64)
@@ -476,13 +476,13 @@ def run_main(argv):
 
 
 def main(epochs, enable_function, path, buffer_size, batch_size):
-  path_to_folder = path
+  path_to_folder = results
 
   pix2pix_object = Pix2pix(epochs, enable_function)
 
   train_dataset, _ = create_dataset(
-      os.path.join(results, 'train/*.jpg'),
-      os.path.join(results, 'test/*.jpg'),
+      os.path.join(path_to_folder, 'train/*.jpg'),
+      os.path.join(path_to_folder, 'test/*.jpg'),
       buffer_size, batch_size)
   checkpoint_pr = get_checkpoint_prefix()
   print ('Training ...')
