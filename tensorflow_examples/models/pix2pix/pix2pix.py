@@ -87,7 +87,7 @@ def normalize(input_image, real_image):
   return input_image, real_image
 
 
-@tf.function
+# @tf.function
 def random_jitter(input_image, real_image):
   """Random jittering.
 
