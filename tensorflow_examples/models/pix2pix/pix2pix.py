@@ -101,7 +101,7 @@ def random_jitter(input_image, real_image):
     Input Image, real image
   """
   # resizing to 286 x 286 x 3
-  input_image, real_image = resize(input_image, real_image, 512, 512)
+  input_image, real_image = resize(input_image, real_image, 542, 542)
 
   # randomly cropping to 256 x 256 x 3
   input_image, real_image = random_crop(input_image, real_image)
